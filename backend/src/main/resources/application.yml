@@ -5,3 +5,7 @@ spring:
     redis:
       host: localhost
       port: 6379
+server:
+  servlet:
+    context-path: /api
+  port: 8080

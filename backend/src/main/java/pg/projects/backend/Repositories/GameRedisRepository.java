@@ -11,31 +11,38 @@ public class GameRedisRepository{
     private StringRedisTemplate redisTemplate;
     private RedisJsonService service;
 
+    private final String  GAME_KEY_PREFIX = "game:";
+    private final String GAME_POOL_KEY = "game:ids";
+
     public GameRedisRepository(StringRedisTemplate redisTemplate, RedisJsonService service){
         this.redisTemplate = redisTemplate;
         this.service = service;
     }
 
+    private String key(String id){
+        return GAME_KEY_PREFIX + id;
+    }
+
     public void saveGame(Game game){
-        redisTemplate.opsForValue().set("game:" + game.getId().toString(), service.convertToString(game));
+        redisTemplate.opsForValue().set(key(game.getId().toString()), service.convertToString(game));
         addGameToPool(game.getId().toString());
     }
 
-    public Game getGameById(String key){
-        String game = redisTemplate.opsForValue().get("game:" + key);
+    public Game getGameById(String gameId){
+        String game = redisTemplate.opsForValue().get(key(gameId));
         return service.convertToObject(game, Game.class);
     }
 
-    public boolean existsById(String key){
-        return redisTemplate.opsForSet().isMember("game:ids", key);
+    public boolean existsById(String gameId){
+        return redisTemplate.opsForSet().isMember(GAME_POOL_KEY, gameId);
     }
 
     public void addGameToPool(String gameKey){
-        redisTemplate.opsForSet().add("game:ids", gameKey);
+        redisTemplate.opsForSet().add(GAME_POOL_KEY, gameKey);
     }
 
     public String getRandomGameIdFromPool(){
-        return (String) redisTemplate.opsForSet().randomMember("game:ids");
+        return (String) redisTemplate.opsForSet().randomMember(GAME_POOL_KEY);
     }
 
 }

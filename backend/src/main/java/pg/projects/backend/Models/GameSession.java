@@ -13,9 +13,10 @@ public class GameSession {
 
     private String sessionId;
     private String targetGameId;
-    private Integer maxAttempts;
     private Integer attemptsMade;
     private Instant startedAt;
+    private Boolean gaveUp;
+    private Boolean ended;
 
 
 }

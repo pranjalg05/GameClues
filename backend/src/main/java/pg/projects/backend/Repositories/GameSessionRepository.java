@@ -11,24 +11,62 @@ import java.util.concurrent.TimeUnit;
 @Repository
 public class GameSessionRepository {
 
-    private StringRedisTemplate redisTemplate;
-    private RedisJsonService service;
+    private static final String SESSION_PREFIX = "session:";
+    private static final long SESSION_TTL_MINUTES = 30;
+
+    private final StringRedisTemplate redisTemplate;
+    private final RedisJsonService jsonService;
 
     public GameSessionRepository(
-            StringRedisTemplate template,
-            RedisJsonService service
+            StringRedisTemplate redisTemplate,
+            RedisJsonService jsonService
     ) {
-        this.redisTemplate = template;
-        this.service = service;
+        this.redisTemplate = redisTemplate;
+        this.jsonService = jsonService;
     }
 
-    public void saveSession(GameSession session){
-        redisTemplate.opsForValue().set("session:"+session.getSessionId(), service.convertToString(session), 30, TimeUnit.MINUTES);
+    private String key(String sessionId) {
+        return SESSION_PREFIX + sessionId;
     }
 
-    public Optional<GameSession> getSession(String key){
-        String s = redisTemplate.opsForValue().get("session:" + key);
-        return Optional.ofNullable(service.convertToObject(s, GameSession.class));
+    public void saveSession(GameSession session) {
+        redisTemplate.opsForValue().set(
+                key(session.getSessionId()),
+                jsonService.convertToString(session),
+                SESSION_TTL_MINUTES,
+                TimeUnit.MINUTES
+        );
     }
 
+    public Optional<GameSession> getSession(String sessionId) {
+        String json = redisTemplate.opsForValue().get(key(sessionId));
+        if (json == null) return Optional.empty();
+        return Optional.of(jsonService.convertToObject(json, GameSession.class));
+    }
+
+    public boolean incrementAttempts(String sessionId) {
+        String redisKey = key(sessionId);
+        String json = redisTemplate.opsForValue().get(redisKey);
+
+        if (json == null) return false;
+
+        GameSession session = jsonService.convertToObject(json, GameSession.class);
+        session.setAttemptsMade(session.getAttemptsMade() + 1);
+
+        Long ttl = redisTemplate.getExpire(redisKey, TimeUnit.MINUTES);
+
+        redisTemplate.opsForValue().set(
+                redisKey,
+                jsonService.convertToString(session),
+                ttl != null && ttl > 0 ? ttl : SESSION_TTL_MINUTES,
+                TimeUnit.MINUTES
+        );
+
+        return true;
+    }
+
+    public void delete(String sessionId) {
+        redisTemplate.delete(key(sessionId));
+    }
 }
+
