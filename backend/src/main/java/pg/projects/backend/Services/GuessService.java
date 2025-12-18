@@ -1,0 +1,66 @@
+package pg.projects.backend.Services;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import pg.projects.backend.DTOs.GaveUpResponse;
+import pg.projects.backend.DTOs.GuessRequest;
+import pg.projects.backend.DTOs.GuessResponse;
+import pg.projects.backend.DTOs.SessionId;
+import pg.projects.backend.Repositories.GameRedisRepository;
+import pg.projects.backend.Repositories.GameSessionRepository;
+
+
+@Service
+public class GuessService {
+
+    @Autowired
+    GameRedisRepository gameRepository;
+
+    @Autowired
+    GameSessionRepository sessionRepository;
+
+
+    public GaveUpResponse giveUpGame(SessionId request) {
+        var optionalSession = sessionRepository.getSession(request.sessionId());
+        if (optionalSession.isEmpty()) {
+            throw new IllegalArgumentException("Invalid session ID");
+        }
+
+        var session = optionalSession.get();
+        var game = gameRepository.getGameById(session.getTargetGameId());
+        session.setGaveUp(true);
+        session.setEnded(true);
+        sessionRepository.saveSession(session);
+
+        return new GaveUpResponse(
+                game,
+                session.getAttemptsMade()
+        );
+
+    }
+
+    public ResponseEntity<GuessResponse> makeGuess(GuessRequest request) {
+        var optionalSession = sessionRepository.getSession(request.sessionId());
+
+        if(optionalSession.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+
+        var session = optionalSession.get();
+        if(session.getEnded() || session.getGaveUp()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+
+        var guessedGame = gameRepository.getGameById(request.guessedGameName());
+        if(guessedGame == null){
+            return ResponseEntity.badRequest().build();
+        }
+
+
+        return null;
+    }
+
+
+}

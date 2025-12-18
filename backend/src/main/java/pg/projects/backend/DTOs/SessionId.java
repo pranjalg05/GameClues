@@ -1,6 +1,6 @@
 package pg.projects.backend.DTOs;
 
-public record StartGameResponse(
+public record SessionId(
     String sessionId
 ) {
 }
