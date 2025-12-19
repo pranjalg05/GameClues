@@ -17,7 +17,7 @@ public class IgdbClient {
 
     public String fetchGames(int limit, int offset) throws IOException {
         String body = """
-                        fields id, name, first_release_date, rating,
+                        fields id, name, first_release_date, total_rating, aggregated_rating, game_type,
                                franchises.name,
                                platforms.name,
                                genres.name,
@@ -25,8 +25,8 @@ public class IgdbClient {
                                involved_companies.developer,
                                involved_companies.publisher;
                 
-                        where rating != null;
-                        sort rating desc;
+                        where (game_type = 0 | game_type = 8) & (aggregated_rating != null & aggregated_rating_count >= 5);
+                        sort aggregated_rating desc;
                         limit %d;
                         offset %d;
                 """.formatted(limit, offset);

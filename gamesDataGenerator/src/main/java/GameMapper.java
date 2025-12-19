@@ -27,7 +27,7 @@ public class GameMapper {
             game.id = node.path("id").asLong();
             game.name = node.path("name").asText(null);
 
-            game.rating = node.path("rating").isMissingNode() ? null : (int) Math.round(node.path("rating").asDouble());
+            game.rating = (int) Math.round(node.path("total_rating").asDouble());
 
             game.genres = extractNameSet(node.path("genres"));
             game.franchises = extractNameSet(node.path("franchises"));
