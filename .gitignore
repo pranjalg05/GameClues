@@ -4,6 +4,12 @@ backend/.mvn/wrapper/maven-wrapper.jar
 !backend/**/src/main/**/target/
 !backend/**/src/test/**/target/
 
+gamesDataGenerator/target/
+!gamesDataGenerator/**/src/main/**/target/
+!gamesDataGenerator/**/src/test/**/target/
+gamesDataGenerator/.mvn/wrapper/maven-wrapper.jar
+
+
 ### STS ###
 .apt_generated
 .classpath

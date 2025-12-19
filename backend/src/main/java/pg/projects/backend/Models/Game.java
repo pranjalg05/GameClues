@@ -16,7 +16,7 @@ public class Game {
     private String name;
     private Integer releaseYear;
     private Integer rating;
-    private Set<String> franchices;
+    private Set<String> franchises;
     private Set<String> platforms;
     private Set<String> genres;
     private String developer;
