@@ -12,6 +12,7 @@ import java.util.Set;
 public class Game {
 
     public Long id;
+    public String normalizedName;
     public String name;
     public Integer releaseYear;
     public Integer rating;

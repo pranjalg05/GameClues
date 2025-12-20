@@ -11,7 +11,6 @@ public class GameRedisRepository{
 
     private StringRedisTemplate redisTemplate;
     private RedisJsonService service;
-    private GameNormalizer normalizer;
 
     private final String  GAME_KEY_PREFIX = "game:";
     private final String GAME_POOL_KEY = "game:ids";
@@ -22,7 +21,6 @@ public class GameRedisRepository{
                                GameNormalizer normalizer) {
         this.redisTemplate = redisTemplate;
         this.service = service;
-        this.normalizer = normalizer;
     }
 
     private String IDkey(String id){
@@ -34,9 +32,8 @@ public class GameRedisRepository{
     }
 
     public void saveGame(Game game){
-        game = normalizer.normalizeGame(game);
         redisTemplate.opsForValue().set(IDkey(game.getId().toString()), service.convertToString(game));
-        redisTemplate.opsForValue().set(nameKey(game.getName()), game.getId().toString());
+        redisTemplate.opsForValue().set(nameKey(game.getNormalizedName()), game.getId().toString());
         addGameToPool(game.getId().toString());
     }
 

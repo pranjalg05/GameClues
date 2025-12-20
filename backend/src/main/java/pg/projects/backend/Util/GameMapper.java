@@ -1,6 +1,8 @@
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import model.Game;
+package pg.projects.backend.Util;
+
+import pg.projects.backend.Models.Game;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -12,7 +14,7 @@ import java.util.Set;
 public class GameMapper {
 
     private static final ObjectMapper mapper = new ObjectMapper();
-    private static GameNormalizer normalizer = new GameNormalizer();
+    private static final GameNormalizer normalizer = new GameNormalizer();
 
     public static List<Game> map(String rawJson) throws Exception {
         List<Game> games = new ArrayList<>();
@@ -24,19 +26,19 @@ public class GameMapper {
 
             Game game = new Game();
 
-            game.id = node.path("id").asLong();
-            game.name = node.path("name").asText(null);
-            game.rating = (int) Math.round(node.path("total_rating").asDouble());
+            game.setId(node.path("id").asLong());
+            game.setName(node.path("name").asText(null));
+            game.setRating((int) Math.round(node.path("total_rating").asDouble()));
 
-            game.genres = extractNameSet(node.path("genres"));
-            game.franchises = extractNameSet(node.path("franchises"));
-            game.platforms = extractNameSet(node.path("platforms"));
+            game.setGenres(extractNameSet(node.path("genres")));
+            game.setFranchises(extractNameSet(node.path("franchises")));
+            game.setPlatforms(extractNameSet(node.path("platforms")));
 
             if (node.has("first_release_date")) {
                 long epoch = node.get("first_release_date").asLong();
-                game.releaseYear = Instant.ofEpochSecond(epoch)
+                game.setReleaseYear(Instant.ofEpochSecond(epoch)
                         .atZone(ZoneId.systemDefault())
-                        .getYear();
+                        .getYear());
             }
 
             extractCompanies(node, game);
@@ -71,13 +73,12 @@ public class GameMapper {
             JsonNode company = companyNode.path("company");
 
             if (companyNode.path("developer").asBoolean(false)) {
-                game.developer = company.path("name").asText(null);
+                game.setDeveloper(company.path("name").asText(null));
             }
 
             if (companyNode.path("publisher").asBoolean(false)) {
-                game.publisher = company.path("name").asText(null);
+                game.setPublisher(company.path("name").asText(null));
             }
         }
     }
-
 }

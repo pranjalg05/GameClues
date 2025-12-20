@@ -53,7 +53,8 @@ public class GuessService {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
-        var guessedGame = gameRepository.getGameById(request.guessedGameName());
+        String guessedGameName = request.guessedGameName().replaceAll("\\s+", " ").trim().toLowerCase().replaceAll(" ", "-");
+        var guessedGame = gameRepository.getGameByName(guessedGameName);
         if(guessedGame == null){
             return ResponseEntity.badRequest().build();
         }

@@ -14,6 +14,7 @@ public class Game {
 
     private Long id;
     private String name;
+    private String normalizedName;
     private Integer releaseYear;
     private Integer rating;
     private Set<String> franchises;

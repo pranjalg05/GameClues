@@ -19,7 +19,7 @@ public class GameNormalizer {
     }
 
     public Game normalizeGame(Game game){
-        game.setName(normalize(game.getName()));
+        game.setNormalizedName(normalize(game.getName()).replaceAll(" ", "-"));
         game.setDeveloper(normalize(game.getDeveloper()));
         game.setPublisher(normalize(game.getPublisher()));
         game.setFranchises(normalizeSet(game.getFranchises()));
