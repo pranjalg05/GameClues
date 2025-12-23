@@ -7,6 +7,8 @@ import pg.projects.backend.Models.Enums.BinaryComparison;
 import pg.projects.backend.Models.Enums.NumericComparison;
 import pg.projects.backend.Models.Enums.PlatformComparison;
 
+import java.util.Set;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,7 +18,9 @@ public class ComparisonResult {
     NumericComparison rating;
     BinaryComparison franchise;
     PlatformComparison platforms;
-    BinaryComparison genres;
+    Set<String> platformsMatched;
+    PlatformComparison genres;
+    Set<String> genresMatched;
     BinaryComparison developer;
     BinaryComparison publisher;
 

@@ -3,31 +3,32 @@ package pg.projects.backend;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.ResponseEntity;
+import pg.projects.backend.DTOs.GuessRequest;
+import pg.projects.backend.DTOs.GuessResponse;
+import pg.projects.backend.Models.Game;
 import pg.projects.backend.Models.GameSession;
 import pg.projects.backend.Repositories.GameRedisRepository;
 import pg.projects.backend.Repositories.GameSessionRepository;
+import pg.projects.backend.Services.GuessService;
+import pg.projects.backend.Services.IgdbService;
+import pg.projects.backend.Util.GameMapper;
+import pg.projects.backend.Util.GameNormalizer;
 
 @SpringBootTest
 class GameCluesBackendTests {
 
-
     @Autowired
-    GameRedisRepository repository;
-
-    @Autowired
-    GameSessionRepository sessionRepository;
+    IgdbService guessService;
 
     @Test
     public void test(){
-        GameSession session = new GameSession();
-        session.setSessionId("test-session-123");
-        session.setTargetGameId("game-456");
-        session.setMaxAttempts(5);
-        session.setAttemptsMade(0);
-        sessionRepository.saveSession(session);
-        int pause = 0;
-        sessionRepository.incrementAttempts(session.getSessionId());
-        int debughere = 0;
+
+        Game game = GameMapper.map(guessService.fetchGameData("god of war")).get(0);
+        int t = 1;
+
+
+
     }
 
 }

@@ -10,6 +10,7 @@ import pg.projects.backend.DTOs.GuessResponse;
 import pg.projects.backend.DTOs.SessionId;
 import pg.projects.backend.Repositories.GameRedisRepository;
 import pg.projects.backend.Repositories.GameSessionRepository;
+import pg.projects.backend.Util.GameMapper;
 
 
 @Service
@@ -20,6 +21,12 @@ public class GuessService {
 
     @Autowired
     GameSessionRepository sessionRepository;
+
+    @Autowired
+    GameMapper mapper;
+
+    @Autowired
+    private IgdbService igdbService;
 
 
     public GaveUpResponse giveUpGame(SessionId request) {
@@ -55,12 +62,39 @@ public class GuessService {
 
         String guessedGameName = request.guessedGameName().replaceAll("\\s+", " ").trim().toLowerCase().replaceAll(" ", "-");
         var guessedGame = gameRepository.getGameByName(guessedGameName);
+
         if(guessedGame == null){
-            return ResponseEntity.badRequest().build();
+            guessedGame = GameMapper.map(igdbService.fetchGameData(guessedGameName)).get(0);
         }
 
+        sessionRepository.incrementAttempts(session.getSessionId());
 
-        return null;
+        if(session.getTargetGameId().equals(guessedGame.getId().toString())){
+            session.setEnded(true);
+            sessionRepository.saveSession(session);
+            return ResponseEntity.ok(
+                    new GuessResponse(
+                            true,
+                            session.getAttemptsMade(),
+                            guessedGame,
+                            ComparisonService.allMatchCopy(guessedGame)
+                    )
+            );
+
+        }
+
+        var targetGame = gameRepository.getGameById(session.getTargetGameId());
+        var comparison = ComparisonService.compareGames(guessedGame, targetGame);
+
+        return ResponseEntity.ok(
+                new GuessResponse(
+                        false,
+                        session.getAttemptsMade(),
+                        guessedGame,
+                        comparison
+                )
+        );
+
     }
 
 

@@ -10,8 +10,8 @@ public class IgdbConfig {
 
     @Bean
     WebClient igdbWebClient(
-            @Value("${igdb.client-id}") String clientId,
             @Value("${igdb.access-token}") String accessToken,
+            @Value("${igdb.client-id}") String clientId,
             @Value("${igdb.base-url}/games") String baseUrl
             ) {
         return WebClient.builder()

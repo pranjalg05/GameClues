@@ -1,5 +1,6 @@
 package pg.projects.backend.Util;
 
+import org.springframework.stereotype.Component;
 import pg.projects.backend.Models.Game;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -11,12 +12,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@Component
 public class GameMapper {
 
     private static final ObjectMapper mapper = new ObjectMapper();
     private static final GameNormalizer normalizer = new GameNormalizer();
 
-    public static List<Game> map(String rawJson) throws Exception {
+    public static List<Game> map(String rawJson){
         List<Game> games = new ArrayList<>();
 
         JsonNode root = mapper.readTree(rawJson);
@@ -52,6 +54,7 @@ public class GameMapper {
         return games;
 
     }
+
 
     private static Set<String> extractNameSet(JsonNode arrayNode) {
         Set<String> result = new HashSet<>();

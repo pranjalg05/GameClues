@@ -10,6 +10,6 @@ server:
     context-path: /api
   port: 8080
 igdb:
-  client-id: {$CLIENT_ID}
-  access-token: {$ACCESS_TOKEN}
+  client-id: ${CLIENT_ID}
+  access-token: ${ACCESS_TOKEN}
   base-url: https://api.igdb.com/v4

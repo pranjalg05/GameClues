@@ -4,12 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.reactive.function.client.WebClient;
+import pg.projects.backend.Util.GameMapper;
+import tools.jackson.databind.ObjectMapper;
 
 @Service
 public class IgdbService {
 
     @Autowired
     private WebClient igdbWebClient;
+
+
+
 
     private String getQuery(String gameName) {
         return """
@@ -25,9 +30,10 @@ public class IgdbService {
                 """.formatted(gameName);
     }
 
-    public String fetchGameData(String query) {
+    public String fetchGameData(String gameName) {
+        String query = getQuery(gameName);
         return igdbWebClient.post()
-                .body(query, String.class)
+                .bodyValue(query)
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
