@@ -30,7 +30,7 @@ public class GameController {
     }
 
     @PostMapping("/give-up")
-    public GaveUpResponse giveUpGame(@RequestBody SessionId request) {
+    public ResponseEntity<GaveUpResponse> giveUpGame(@RequestBody SessionId request) {
         return guessService.giveUpGame(request);
     }
 

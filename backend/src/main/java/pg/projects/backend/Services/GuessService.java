@@ -11,6 +11,7 @@ import pg.projects.backend.DTOs.SessionId;
 import pg.projects.backend.Repositories.GameRedisRepository;
 import pg.projects.backend.Repositories.GameSessionRepository;
 import pg.projects.backend.Util.GameMapper;
+import pg.projects.backend.Util.GameNormalizer;
 
 
 @Service
@@ -23,48 +24,51 @@ public class GuessService {
     GameSessionRepository sessionRepository;
 
     @Autowired
-    GameMapper mapper;
-
-    @Autowired
     private IgdbService igdbService;
 
 
-    public GaveUpResponse giveUpGame(SessionId request) {
-        var optionalSession = sessionRepository.getSession(request.sessionId());
-        if (optionalSession.isEmpty()) {
-            throw new IllegalArgumentException("Invalid session ID");
+    public ResponseEntity<GaveUpResponse> giveUpGame(SessionId request) {
+        var session = sessionRepository.getSession(request.sessionId());
+        if (session == null) {
+            return ResponseEntity.notFound().build();
         }
 
-        var session = optionalSession.get();
+        if(session.getEnded() || session.getGaveUp()) {
+            return ResponseEntity.notFound().build();
+        }
         var game = gameRepository.getGameById(session.getTargetGameId());
         session.setGaveUp(true);
         session.setEnded(true);
         sessionRepository.saveSession(session);
 
-        return new GaveUpResponse(
+        GaveUpResponse gaveUpResponse = new GaveUpResponse(
                 game,
                 session.getAttemptsMade()
         );
+        return ResponseEntity.ok(gaveUpResponse);
 
     }
 
     public ResponseEntity<GuessResponse> makeGuess(GuessRequest request) {
-        var optionalSession = sessionRepository.getSession(request.sessionId());
+        var session = sessionRepository.getSession(request.sessionId());
 
-        if(optionalSession.isEmpty()){
+        if(session == null){
             return ResponseEntity.notFound().build();
         }
 
-        var session = optionalSession.get();
         if(session.getEnded() || session.getGaveUp()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
-        String guessedGameName = request.guessedGameName().replaceAll("\\s+", " ").trim().toLowerCase().replaceAll(" ", "-");
-        var guessedGame = gameRepository.getGameByName(guessedGameName);
+
+        String guessedGameName = request.guessedGameName();
+        var guessedGame = gameRepository.getGameByName(GameNormalizer.normalizeGameName(guessedGameName));
+        sessionRepository.incrementAttempts(session.getSessionId());
+
 
         if(guessedGame == null){
-            guessedGame = GameMapper.map(igdbService.fetchGameData(guessedGameName)).get(0);
+            String gameData = igdbService.fetchGameData(guessedGameName);
+            guessedGame = GameMapper.map(gameData).get(0);
         }
 
         sessionRepository.incrementAttempts(session.getSessionId());
@@ -82,6 +86,8 @@ public class GuessService {
             );
 
         }
+
+
 
         var targetGame = gameRepository.getGameById(session.getTargetGameId());
         var comparison = ComparisonService.compareGames(guessedGame, targetGame);

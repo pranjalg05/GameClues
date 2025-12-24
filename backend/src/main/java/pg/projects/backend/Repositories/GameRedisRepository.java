@@ -16,9 +16,9 @@ public class GameRedisRepository{
     private final String GAME_POOL_KEY = "game:ids";
     private final String GAME_NAME_POOL_KEY = "game:name:";
 
+
     public GameRedisRepository(StringRedisTemplate redisTemplate,
-                               RedisJsonService service,
-                               GameNormalizer normalizer) {
+                               RedisJsonService service) {
         this.redisTemplate = redisTemplate;
         this.service = service;
     }

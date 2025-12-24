@@ -24,7 +24,7 @@ class GameCluesBackendTests {
     @Test
     public void test(){
 
-        Game game = GameMapper.map(guessService.fetchGameData("god of war")).get(0);
+        String gameData = guessService.fetchGameData("god of war");
         int t = 1;
 
 

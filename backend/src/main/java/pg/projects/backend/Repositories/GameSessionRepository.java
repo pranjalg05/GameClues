@@ -5,7 +5,6 @@ import org.springframework.stereotype.Repository;
 import pg.projects.backend.Models.GameSession;
 import pg.projects.backend.Util.RedisJsonService;
 
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Repository
@@ -38,10 +37,10 @@ public class GameSessionRepository {
         );
     }
 
-    public Optional<GameSession> getSession(String sessionId) {
+    public GameSession getSession(String sessionId) {
         String json = redisTemplate.opsForValue().get(key(sessionId));
-        if (json == null) return Optional.empty();
-        return Optional.of(jsonService.convertToObject(json, GameSession.class));
+        if (json == null) return null;
+        return jsonService.convertToObject(json, GameSession.class);
     }
 
     public boolean incrementAttempts(String sessionId) {

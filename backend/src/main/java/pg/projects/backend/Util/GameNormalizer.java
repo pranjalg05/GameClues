@@ -9,23 +9,29 @@ import java.util.Set;
 @Component
 public class GameNormalizer {
 
-    public String normalize(String name){
+    private String normalize(String name){
         if(name==null) return null;
         return name.trim().toLowerCase()
                 .replaceAll("\\s+"," ");
     }
 
-    public Game normalizeGame(Game game){
-        game.setNormalizedName(normalize(game.getName()).replaceAll(" ", "-"));
+    public static String normalizeGameName(String name){
+        if(name==null) return null;
+        return name.trim().toLowerCase()
+                .replaceAll("\\s+"," ")
+                .replaceAll(" ", "-");
+    }
+
+    public void normalizeGame(Game game){
+        game.setNormalizedName(normalizeGameName(game.getName()));
         game.setDeveloper(normalize(game.getDeveloper()));
         game.setPublisher(normalize(game.getPublisher()));
         game.setFranchises(normalizeSet(game.getFranchises()));
         game.setPlatforms(normalizeSet(game.getPlatforms()));
         game.setGenres(normalizeSet(game.getGenres()));
-        return game;
     }
 
-    public Set<String> normalizeSet(Set<String> set){
+    private  Set<String> normalizeSet(Set<String> set){
         if(set==null) return null;
         return set.stream()
                 .filter(Objects::nonNull)
