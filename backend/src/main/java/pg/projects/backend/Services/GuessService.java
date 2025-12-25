@@ -1,6 +1,5 @@
 package pg.projects.backend.Services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -17,14 +16,19 @@ import pg.projects.backend.Util.GameNormalizer;
 @Service
 public class GuessService {
 
-    @Autowired
+    final
     GameRedisRepository gameRepository;
 
-    @Autowired
+    final
     GameSessionRepository sessionRepository;
 
-    @Autowired
-    private IgdbService igdbService;
+    private final IgdbService igdbService;
+
+    public GuessService(GameRedisRepository gameRepository, GameSessionRepository sessionRepository, IgdbService igdbService) {
+        this.gameRepository = gameRepository;
+        this.sessionRepository = sessionRepository;
+        this.igdbService = igdbService;
+    }
 
 
     public ResponseEntity<GaveUpResponse> giveUpGame(SessionId request) {
@@ -68,7 +72,7 @@ public class GuessService {
 
         if(guessedGame == null){
             String gameData = igdbService.fetchGameData(guessedGameName);
-            guessedGame = GameMapper.map(gameData).get(0);
+            guessedGame = GameMapper.map(gameData).getFirst();
         }
 
         sessionRepository.incrementAttempts(session.getSessionId());

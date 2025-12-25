@@ -1,6 +1,5 @@
 package pg.projects.backend.Services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pg.projects.backend.DTOs.SessionId;
 import pg.projects.backend.Models.GameSession;
@@ -14,11 +13,16 @@ import java.util.UUID;
 public class GameSessionService {
 
 
-    @Autowired
+    final
     GameRedisRepository gameRepository;
 
-    @Autowired
+    final
     GameSessionRepository sessionRepository;
+
+    public GameSessionService(GameRedisRepository gameRepository, GameSessionRepository sessionRepository) {
+        this.gameRepository = gameRepository;
+        this.sessionRepository = sessionRepository;
+    }
 
 
     public SessionId startNewGame() {

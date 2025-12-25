@@ -3,7 +3,6 @@ package pg.projects.backend.Repositories;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Repository;
 import pg.projects.backend.Models.Game;
-import pg.projects.backend.Util.GameNormalizer;
 import pg.projects.backend.Util.RedisJsonService;
 
 @Repository
@@ -56,7 +55,6 @@ public class GameRedisRepository{
 
     public Game getGameByName(String name){
         String gameId = redisTemplate.opsForValue().get(nameKey(name));
-        if(gameId == null) return null;
         return getGameById(gameId);
     }
 }

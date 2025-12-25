@@ -2,10 +2,7 @@ package pg.projects.backend.Services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.reactive.function.client.WebClient;
-import pg.projects.backend.Util.GameMapper;
-import tools.jackson.databind.ObjectMapper;
 
 @Service
 public class IgdbService {

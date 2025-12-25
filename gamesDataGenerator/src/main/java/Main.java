@@ -7,8 +7,8 @@ import java.util.List;
 
 public class Main {
 
-    private static final int PAGE_SIZE = 10;
-    private static final int TARGET_COUNT = 10;
+    private static final int PAGE_SIZE = 100;
+    private static final int TARGET_COUNT = 500;
 
     public static void main(String[] args) throws Exception {
 

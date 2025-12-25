@@ -43,11 +43,11 @@ public class GameSessionRepository {
         return jsonService.convertToObject(json, GameSession.class);
     }
 
-    public boolean incrementAttempts(String sessionId) {
+    public void incrementAttempts(String sessionId) {
         String redisKey = key(sessionId);
         String json = redisTemplate.opsForValue().get(redisKey);
 
-        if (json == null) return false;
+        if (json == null) return;
 
         GameSession session = jsonService.convertToObject(json, GameSession.class);
         session.setAttemptsMade(session.getAttemptsMade() + 1);
@@ -61,7 +61,6 @@ public class GameSessionRepository {
                 TimeUnit.MINUTES
         );
 
-        return true;
     }
 
     public void delete(String sessionId) {

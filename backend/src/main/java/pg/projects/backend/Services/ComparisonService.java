@@ -7,7 +7,6 @@ import pg.projects.backend.Models.Enums.NumericComparison;
 import pg.projects.backend.Models.Enums.PlatformComparison;
 import pg.projects.backend.Models.Game;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
